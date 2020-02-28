@@ -21,7 +21,9 @@ function middlewareRegistration(app) {
     koaSwagger({
       routePrefix: '/swagger', 
       swaggerOptions: {
-        url: 'http://localhost:3000/swagger.json', 
+        url: process.env.NODE_ENV === 'production'
+          ? `${process.env.HOST_URL}/swagger.json`
+          : 'http://localhost:3000/swagger.json'
       },
     }),
   );
