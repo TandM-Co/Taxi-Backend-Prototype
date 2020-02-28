@@ -1,64 +1,75 @@
-const {
-  userQueries
-} = require('../../db/queries/index');
 const bcrypt = require('bcrypt');
-const { Parser, F, createToken } = require('../../helpers/index');
+const R = require('ramda');
+
+const { Parser, F, dbErrorHandler } = require('../../helpers/index');
+const { userQueries } = require('../../db/queries/index');
+const { ErrorHandler, Response } = require('../../models/index');
 
 
 async function registration(ctx) {
-  try {
-    const { 
-      email, 
-      password, 
-      organization_name 
-    } = ctx.request.body;
+  const { 
+    email, 
+    password, 
+    organization_name 
+  } = ctx.request.body;
 
-    const { insertUser } = userQueries;
+  const { insertUser } = userQueries;
 
-    const salt = await bcrypt.genSalt(10);
-    passwordHash = await bcrypt.hash(password, salt);
+  const salt = await bcrypt.genSalt(10);
+  passwordHash = await bcrypt.hash(password, salt);
 
-    const test = await ctx.db.query(insertUser(), [email, passwordHash, organization_name])
-  } catch (err) {
-    console.log(err);
-  }
+  const userResponse = await dbErrorHandler(
+    ctx.db.query(insertUser(), [email, passwordHash, organization_name]),
+    {message: null, status: 400}
+  )
+
+  const rowLens = R.lensPath(['rows']);
+  const curryView = R.curry(R.view);
+
+  const getUser = R.pipe(
+    curryView(rowLens),
+    F.getFirstFromArray
+  );
+
+  const user = getUser(userResponse)
+
+  return user;
 }
 
 async function login(ctx) {
-  try {
-    const {
-      password,
-      organization_name,
-    } = ctx.request.body;
+  const {
+    password,
+    organization_name,
+  } = ctx.request.body;
 
-    const { selectUser } = userQueries;
+  const { selectUser } = userQueries;
 
-    const response = await ctx.db.query(selectUser(), [organization_name]);
+  const response = new Response(
+    await ctx.db.query(selectUser(), [organization_name])
+  );
 
-    const getUser = F.compose(
-      F.getFirstFromArray,
-      Parser.dbResponseParser
-    );
-
-    const user = getUser(response)
-
-
-    const isPasswordCompare = await bcrypt.compare(password, user.password);
-
-    
-    const token = createToken(user)
-
-    return token;
-    //const isPasswordCompare = await bcrypt.compare(password, password);
-      ///
-
-  } catch (err) {
-    console.log(err);
+  if (response.isEmpty) {
+    throw new ErrorHandler({message: 'Incorrect credentials'} , 400)
   }
-}
+
+  const getUser = F.compose(
+    F.getFirstFromArray,
+    Parser.dbResponseParser
+  );
+
+  const user = getUser(response)
+
+  const isPasswordCompare = await bcrypt.compare(password, user.password);
+
+  if (isPasswordCompare) {
+    throw new ErrorHandler({message: 'Incorrect credentials'} , 400)
+  }
+
+  return user;
+};
 
 
 module.exports = {
   registration,
   login,
-}
+};

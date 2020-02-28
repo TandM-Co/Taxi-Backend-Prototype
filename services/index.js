@@ -3,4 +3,5 @@ module.exports = {
   routersRegistration: require('./routersRegistration'),
   koaServer: require('./koaServer'),
   createDB: require('./createDB'),
+  emitterRegistration: require('./emiterRegistration'),
 }

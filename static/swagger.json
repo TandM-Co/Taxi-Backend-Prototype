@@ -1,0 +1,113 @@
+{
+  "swagger": "2.0",
+  "host": "localhost:3000",
+  "basePath": "/api",
+
+  "info": {
+    "description": "This is prototype server",
+    "version": "1.0.0",
+    "title": "Limit servise",
+    "contact": {
+      "email": "tandm.public@gmail.com"
+    }
+  },
+
+  "tags": [
+    {
+      "name": "authentication",
+      "description": "Allow user login/register"
+    }
+  ],
+
+  "schemes": ["http"],
+
+  "paths": {
+    "/authentication/login": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Login user",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "descriptioin": "successful operation",
+            "schema": {"$ref": "#/definitions/Token"}
+          },
+          "400": {
+            "descriptioin": "unsuccessful operation",
+            "schema": {"$ref": "#/definitions/Error"}
+          }
+        }
+      }
+    },
+
+    "/authentication/registration": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Registration user",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "descriptioin": "successful operation",
+            "schema": {"$ref": "#/definitions/Token"}
+          },
+          "400": {
+            "descriptioin": "unsuccessful operation",
+            "schema": {"$ref": "#/definitions/Error"}
+          }
+        }
+      }
+    }
+  },
+  
+
+  "definitions": {
+    "Error": {
+      "type": "object",
+      "properties": {
+        "body": {"type": "object"}
+      }
+    },
+
+    "Token": {
+      "type": "object",
+      "properties": {
+        "token": {"type": "string"}
+      }
+    },
+
+    "User": {
+      "type": "object",
+      "properties": {
+        "email": {"type": "string"},
+        "password": {"type": "string"},
+        "organization_name": {"type": "string"}
+      }
+    }
+  }
+}

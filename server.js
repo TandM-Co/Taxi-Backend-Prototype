@@ -4,11 +4,14 @@ const {
   routersRegistration, 
   koaServer,
   createDB,
+  emitterRegistration,
 } = require('./services/index');
+
 
 const app = koaServer();
 
 middlewareRegistration(app);
+emitterRegistration(app);
 routersRegistration(app);
 
 const db = dbConnection();
