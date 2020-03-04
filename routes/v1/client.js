@@ -14,8 +14,7 @@ router.post(
   async (ctx, next) => {
     try {
       const result = await clientController.calculateLimit(ctx)
-      console.log(result)
-      ctx.state.user = result;
+      ctx.state.response = result;
       next()
     } catch(err) {
       ctx.app.emit('error', err, ctx);
@@ -24,7 +23,9 @@ router.post(
 );
 
 router.use(async (ctx, next) => {
-  
+  ctx.status = 200;
+  ctx.body = ctx.state.response;
+  next();
 });
 
 module.exports = router;
