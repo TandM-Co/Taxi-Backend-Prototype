@@ -17,6 +17,10 @@ class F {
       return result;
     }
   }
+
+  static path(path, fun, value) {
+    return fun(value[path]);
+  }
 }
 
 module.exports = F;
