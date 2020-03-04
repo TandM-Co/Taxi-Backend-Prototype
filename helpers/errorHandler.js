@@ -1,6 +1,6 @@
-const { ErrorResponse } = require('../models/index');
+const { ErrorHandler } = require('../models/index');
 
-async function dbErrorHandler(operation, error) {
+async function errorHandler(operation, error) {
   const { message, status } = error;
 
   try {
@@ -10,4 +10,4 @@ async function dbErrorHandler(operation, error) {
   }
 }
 
-module.exports = dbErrorHandler;
+module.exports = errorHandler;

@@ -3,7 +3,7 @@ const R = require('ramda');
 
 const { Parser, F, dbErrorHandler } = require('../../helpers/index');
 const { userQueries } = require('../../db/queries/index');
-const { ErrorHandler, Response } = require('../../models/index');
+const { ErrorResponse, Response } = require('../../models/index');
 
 
 async function registration(ctx) {
@@ -49,7 +49,7 @@ async function login(ctx) {
   );
 
   if (response.isEmpty) {
-    throw new ErrorHandler({message: 'Incorrect credentials'} , 400)
+    throw new ErrorResponse({message: 'Incorrect credentials'} , 400)
   }
 
   const getUser = F.compose(
@@ -62,7 +62,7 @@ async function login(ctx) {
   const isPasswordCompare = await bcrypt.compare(password, user.password);
 
   if (isPasswordCompare) {
-    throw new ErrorHandler({message: 'Incorrect credentials'} , 400)
+    throw new ErrorResponse({message: 'Incorrect credentials'} , 400)
   }
 
   return user;

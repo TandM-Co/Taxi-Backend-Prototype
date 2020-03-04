@@ -2,7 +2,6 @@ const Router = require('koa-router');
 
 const { ROUTES_NAME } = require('../../constants/index');
 const { clientController } = require('../../controllers/v1/index');
-const { createToken } = require('../../helpers/index')
 
 
 const router = new Router({
@@ -14,7 +13,7 @@ router.post(
   async (ctx, next) => {
     try {
       const result = await clientController.calculateLimit(ctx)
-      ctx.state.response = result;
+      ctx.state.clientLimit = result;
       next()
     } catch(err) {
       ctx.app.emit('error', err, ctx);
@@ -24,7 +23,8 @@ router.post(
 
 router.use(async (ctx, next) => {
   ctx.status = 200;
-  ctx.body = ctx.state.response;
+  ctx.body = ctx.state.clientLimit;
+  await clientController.saveOperation(ctx)
   next();
 });
 

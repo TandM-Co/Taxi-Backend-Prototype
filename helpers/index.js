@@ -5,4 +5,5 @@ module.exports = {
   dbErrorHandler: require('./dbErrorHandler'),
   Validation: require('./Validation'),
   Limit: require('./Limit'),
+  errorHandler: require('./errorHandler'),
 }

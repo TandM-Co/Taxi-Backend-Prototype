@@ -1,5 +1,5 @@
 module.exports = {
   Token: require('./Token'),
-  ErrorHandler: require('./ErrorHandler'),
+  ErrorResponse: require('./ErrorResponse'),
   Response: require('./Response'),
 }
