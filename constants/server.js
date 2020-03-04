@@ -1,3 +1,3 @@
 module.exports = {
-  SERVER_DEV_PORT: 3000,
+  SERVER_PORT: process.env.PORT || 3000 ,
 }
