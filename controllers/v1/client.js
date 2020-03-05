@@ -6,24 +6,25 @@ const { clientLimitQueries, operationQueries } = require('../../db/queries/index
 
 async function calculateLimit(ctx) {
   const limitRequest = ctx.request.body;
-  const { clientId, partnerId } = ctx.request.body;
+  const { partnerId } = ctx.request.body;
   const { selectClientLimit, updateClientTotalLimit, inserClientLimit } = clientLimitQueries;
+  const clientId = ctx.params.id;
 
   const userResponse = await ctx.db.query(selectClientLimit(), [clientId, partnerId]);
 
   const rowLens = R.lensPath(['rows']);
   const curryView = R.curry(R.view);
 
-  const getUser = R.pipe(
+  const getClient = R.pipe(
     curryView(rowLens),
     F.getFirstFromArray
   );
 
-  const user = getUser(userResponse)
+  const user = getClient(userResponse)
 
   if (!user) {
     const insertedUser = await ctx.db.query(inserClientLimit(), [clientId, partnerId, 0])
-    return getUser(insertedUser)
+    return getClient(insertedUser)
   }
 
   const curryPath = R.curry(F.path);
@@ -39,7 +40,57 @@ async function calculateLimit(ctx) {
 
   const updatedUser = await ctx.db.query(updateClientTotalLimit(), [limitDecision, clientId, partnerId])
 
-  return getUser(updatedUser);
+  return getClient(updatedUser);
+}
+
+async function useLimit(ctx) {
+  const { partnerId, usedLimit } = ctx.request.body;
+  const { useClientsLimit, selectClientLimit } = clientLimitQueries;
+  const clientId = ctx.params.id;
+
+  const rowLens = R.lensPath(['rows']);
+  const curryView = R.curry(R.view);
+
+  const getClient = R.pipe(
+    curryView(rowLens),
+    F.getFirstFromArray
+  );
+
+  const userResponse = await ctx.db.query(selectClientLimit(), [clientId, partnerId]);
+
+  const user = getClient(userResponse);
+
+  const usedL = Number(usedLimit) + Number(user.used_limit);
+
+  if (usedL > Number(user.total_limit)) {
+    return null;
+  }
+
+  const updatedUser = await ctx.db.query(useClientsLimit(), [usedL, clientId, partnerId]);
+  return updatedUser;
+}
+
+async function repaymentLimit(ctx) {
+  const { partnerId, repayment } = ctx.request.body;
+  const { useClientsLimit, selectClientLimit } = clientLimitQueries;
+  const clientId = ctx.params.id;
+
+  const rowLens = R.lensPath(['rows']);
+  const curryView = R.curry(R.view);
+
+  const getClient = R.pipe(
+    curryView(rowLens),
+    F.getFirstFromArray
+  );
+
+  const userResponse = await ctx.db.query(selectClientLimit(), [clientId, partnerId]);
+
+  const user = getClient(userResponse);
+
+  const currentLimit = Number(user.used_limit) - Number(repayment);
+
+  const updatedUser = await ctx.db.query(useClientsLimit(), [currentLimit, clientId, partnerId]);
+  return updatedUser;
 }
 
 async function saveOperation(ctx) {
@@ -52,4 +103,6 @@ async function saveOperation(ctx) {
 module.exports = {
   calculateLimit,
   saveOperation,
+  useLimit,
+  repaymentLimit,
 };

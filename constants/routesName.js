@@ -10,7 +10,9 @@ module.exports = {
   CLIENTS: {
     ROOT: 'clients',
     ROUTES: {
-      LIMITS: 'limits',
+      USE: 'use',
+      REPAYMENT: 'repayment',
+      CALCULATE: 'calculate',
     }
   }
 }

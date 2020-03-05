@@ -1,2 +1,5 @@
 /node_modules
 /configs/keysDev.js
+/dist
+/.idea
+/.vscode

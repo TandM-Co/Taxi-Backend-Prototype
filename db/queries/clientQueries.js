@@ -27,10 +27,29 @@ const updateClientTotalLimit = () => {
       RETURNING *
   `;
 };
+
+const useClientsLimit = () => {
+  return `
+    UPDATE clients
+      SET used_limit=($1)
+      WHERE (client_id=($2) AND partner_id=($3))
+      RETURNING *
+  `;
+}
+
+const repaymentLimit = () => {
+  return `
+    UPDATE clients
+      SET used_limit=($1)
+      WHERE (client_id=($2) AND partner_id=($3))
+      RETURNING *
+  `;
+}
   
   
 module.exports = {
   inserClientLimit,
   updateClientTotalLimit,
   selectClientLimit,
+  useClientsLimit,
 };
