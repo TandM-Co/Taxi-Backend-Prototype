@@ -1,2 +1,3 @@
 /node_modules
-/configs/keysDev.js
+/src/configs/keysDev.js
+/dist
