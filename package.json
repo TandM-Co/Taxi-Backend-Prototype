@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@koa/cors": "^2.2.3",
-    "bcrypt": "^4.0.0",
+    "bcrypt": "^5.0.0",
     "koa": "^2.11.0",
     "koa-body-parser": "^1.1.2",
     "koa-jwt": "^3.6.0",
